@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+  # Redis容器
+  redis:
+    image: redis:6.2
+    container_name: ruoyi-redis
+    command: redis-server --requirepass aaa@123123
+    ports:
+      - "6379:6379"
+    restart: always
+
+  # MySQL容器
+  mysql:
+    image: mysql:5.7
+    container_name: ruoyi-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: aaa@123123
+      MYSQL_DATABASE: heha
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    restart: always
+
+  # 若依后端服务
+  ruoyi-admin:
+    build: .
+    container_name: ruoyi-server
+    ports:
+      - "8081:8080"
+    depends_on:
+      - mysql
+      - redis
+    restart: always
+
+  # 前端Nginx服务
+  ruoyi-ui:
+    build: ./nginx
+    container_name: ruoyi-ui
+    ports:
+      - "80:80"
+    depends_on:
+      - ruoyi-admin
+    restart: always
+
+volumes:
+  mysql-data:
