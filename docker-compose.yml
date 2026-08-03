@@ -17,11 +17,12 @@ services:
       - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: aaa@123123
+      MYSQL_ROOT_HOST: "%"
       MYSQL_DATABASE: heha
     volumes:
       - mysql-data:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci --init-connect='SET NAMES utf8mb4'
     restart: always
 
   # 若依后端服务
